@@ -9,7 +9,7 @@
     "homepage": "https://www.youtube.com/channel/UCrLikF1yl6dqz0N9OaJlAcA",
     "sources": "https://github.com/prodzpod/fabric-witness"
   },
-  "license": "MIT",
+  "license": "Apache License, Version 2.0",
   "icon": "assets/witness/icon.png",
   "environment": "*",
   "entrypoints": {
