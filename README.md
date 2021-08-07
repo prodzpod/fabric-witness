@@ -1,14 +1,16 @@
-# fabric-witness
+# Witness... 4!
 ![Gradle build](https://github.com/xxfast/fabric-witness/workflows/Gradle%20build/badge.svg)
-[![Release](https://img.shields.io/github/v/release/xxfast/fabric-witness.svg?include_prereleases&logo=mojang-studios)](https://github.com/xxfast/fabric-witness/releases)
+[![Release](https://img.shields.io/github/v/release/xxfast/fabric-witness.svg?include_prereleases&logo=mojang-studios)](https://github.com/prodzpod/fabric-witness/releases)
 
 <img src="https://user-images.githubusercontent.com/13775137/95962402-0e99ce00-0e52-11eb-87a4-a8959bb7aefe.png" align="center">
 
 ## What is it?
 
-The fabric mod that adds puzzle frames from The Witness to Minecraft
+A fork of the fabric mod that adds puzzle frames from The Witness to Minecraft.
 
-This is also a companion mod for The Witness Minecraft [youtube](https://www.youtube.com/channel/UCrLikF1yl6dqz0N9OaJlAcA) series - and adds a variety of decoration blocks to the game to recreate the island 
+This fork aims to continue support, port to 1.17, and add symbols (including custom ones from [The Witness Discord](https://discord.gg/0n3LOz6aEDFYotF6).)
+
+This is also a companion mod for the [Witness Fan Sequel within Minecraft: Witness 4 (Working Title)](https://docs.google.com/document/d/1HfEoHo5p5Uii7gQS2eNXS9Tf8Uxz46_-oYo6DTK9148/edit?usp=sharing).
 
 ## How do I get it?
 
@@ -20,26 +22,8 @@ Make sure to also load in these dependencies
 2. [fabric-language-kotlin](https://www.curseforge.com/minecraft/mc-mods/fabric-language-kotlin)
 2. [lib-gui](https://github.com/CottonMC/LibGui)
 
-## Releasing
+## Funny Todo
+[Refer to this](https://docs.google.com/document/d/1HfEoHo5p5Uii7gQS2eNXS9Tf8Uxz46_-oYo6DTK9148/edit?usp=sharing)
 
-1. Update the mod version in `gradle.properties`
-2. Add a changelog entry in `CHANGELOG.md`
-3. Commit with a message like `Prepare for relase vX.Y.Z`
-4. Tag with `vX.Y.Z`
-5. Push branch, and the tags
-
-## License
-
-Copyright 2020 © Isuru Rajapakse
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+## legal
+- [yes](./LICENSE)
