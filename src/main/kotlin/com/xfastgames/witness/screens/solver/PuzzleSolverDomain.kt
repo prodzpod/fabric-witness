@@ -27,9 +27,6 @@ class PuzzleSolverDomain {
         return graph
     }
 
-    fun introduceWaypoint(panel: Panel) {
-    }
-
     fun stopTrace() {
         stateFlow.value = PuzzleSolverData.PreSolution
     }

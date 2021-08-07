@@ -41,7 +41,8 @@ class Witness : ModInitializer, ClientModInitializer {
             PurpleBougainvilleaDrape.BLOCK,
             BlueBougainvilleaDrape.BLOCK,
             PinkCedarLeaves.BLOCK,
-            CedarLog.BLOCK,
+            PinkCedarLog.BLOCK,
+            PinkCedarSapling.BLOCK,
             IronPuzzleFrameBlock.BLOCK,
             PuzzleComposerBlock.BLOCK,
             IronStandBlock.BLOCK
@@ -65,7 +66,7 @@ class Witness : ModInitializer, ClientModInitializer {
             PurpleBougainvilleaDrape.BLOCK_ITEM,
             BlueBougainvilleaDrape.BLOCK_ITEM,
             PinkCedarLeaves.BLOCK_ITEM,
-            CedarLog.BLOCK_ITEM,
+            PinkCedarLog.BLOCK_ITEM,
             IronPuzzleFrameBlock.BLOCK_ITEM,
             PuzzleComposerBlock.BLOCK_ITEM,
             IronStandBlock.BLOCK_ITEM,

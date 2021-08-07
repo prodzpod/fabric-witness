@@ -11,13 +11,14 @@ import com.xfastgames.witness.utils.intersects
 import com.xfastgames.witness.utils.rotate
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter
 import io.github.cottonmc.cotton.gui.widget.WWidget
+import io.github.cottonmc.cotton.gui.widget.data.InputResult
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
+import net.minecraft.util.math.Vec3f
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 
@@ -52,7 +53,7 @@ class WPuzzleEditor(
 
     @Environment(EnvType.CLIENT)
     override fun paint(matrices: MatrixStack, x: Int, y: Int, mouseX: Int, mouseY: Int) {
-        backgroundPainter.paintBackground(x, y, this)
+        backgroundPainter.paintBackground(matrices, x, y, this)
         matrices.push()
         val puzzleStack: ItemStack = inventory.getStack(outputSlotIndex)
         if (puzzleStack.isEmpty) return matrices.pop()
@@ -63,11 +64,11 @@ class WPuzzleEditor(
         val immediateConsumer: VertexConsumerProvider.Immediate = client.bufferBuilders.entityVertexConsumers
         val puzzleScale = 6.75f
         matrices.scale(puzzleScale, -puzzleScale, puzzleScale)
-        matrices.rotate(Vector3f.POSITIVE_Z, 180f)
+        matrices.rotate(Vec3f.POSITIVE_Z, 180f)
         // Translate relative to panel placement
         matrices.translate(-1.275, -.895, .0)
 
-        val puzzle: Panel = puzzleStack.tag?.getPanel(KEY_PANEL) ?: Panel.DEFAULT
+        val puzzle: Panel = puzzleStack.nbt?.getPanel(KEY_PANEL) ?: Panel.DEFAULT
 
         puzzlePanelRenderer.renderGraph(
             puzzle.graph,
@@ -87,10 +88,10 @@ class WPuzzleEditor(
     }
 
     @Suppress("UnstableApiUsage")
-    override fun onClick(x: Int, y: Int, button: Int) {
+    override fun onClick(x: Int, y: Int, button: Int): InputResult {
         val inputStack: ItemStack = inventory.getStack(outputSlotIndex)
-        if (inputStack.isEmpty) return
-        val inputPuzzle: Panel = inputStack.tag?.getPanel(KEY_PANEL) ?: return
+        if (inputStack.isEmpty) return InputResult.IGNORED
+        val inputPuzzle: Panel = inputStack.nbt?.getPanel(KEY_PANEL) ?: return InputResult.PROCESSED
 
         val xPosition = 1 - (x.toFloat() / width)
         val yPosition = 1 - (y.toFloat() / height)
@@ -124,5 +125,6 @@ class WPuzzleEditor(
         val edge: Edge? = edgeNodePair?.let { inputPuzzle.graph.edgeValue(it).orElse(null) }
 
         onClickListener?.onClick(node, edge, edgeNodePair)
+        return InputResult.PROCESSED
     }
 }

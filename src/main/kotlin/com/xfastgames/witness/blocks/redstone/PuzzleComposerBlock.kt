@@ -2,6 +2,7 @@ package com.xfastgames.witness.blocks.redstone
 
 import com.xfastgames.witness.Witness
 import com.xfastgames.witness.entities.PuzzleComposerBlockEntity
+import com.xfastgames.witness.entities.PuzzleFrameBlockEntity
 import com.xfastgames.witness.screens.composer.PuzzleComposerScreen.Companion.PUZZLE_OUTPUT_SLOT_INDEX
 import com.xfastgames.witness.utils.registerBlock
 import com.xfastgames.witness.utils.registerBlockItem
@@ -44,7 +45,7 @@ class PuzzleComposerBlock : BlockWithEntity(
 
     override fun getRenderType(state: BlockState?): BlockRenderType = BlockRenderType.MODEL
 
-    override fun createBlockEntity(world: BlockView?): BlockEntity? = PuzzleComposerBlockEntity()
+    override fun createBlockEntity(pos: BlockPos?, state: BlockState?): BlockEntity = PuzzleComposerBlockEntity(pos, state)
 
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
         return super.getPlacementState(ctx)?.with(HORIZONTAL_FACING, ctx.playerFacing)

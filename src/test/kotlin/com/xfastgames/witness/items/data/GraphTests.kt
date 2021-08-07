@@ -5,7 +5,7 @@ import com.google.common.graph.MutableValueGraph
 import com.google.common.graph.ValueGraph
 import com.google.common.graph.ValueGraphBuilder
 import com.google.common.truth.Truth.assertThat
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -31,7 +31,7 @@ class GraphTests {
 
     @Test
     fun `Test put and read grid`() {
-        val tag: CompoundTag = CompoundTag().apply { putValueGraph(KEY_GRAPH, testGraph) }
+        val tag: NbtCompound = NbtCompound().apply { putValueGraph(KEY_GRAPH, testGraph) }
         println(tag)
         val actual: ValueGraph<Node, Edge> = tag.getValueGraph(KEY_GRAPH)
         assertThat(actual).isEqualTo(testGraph)
@@ -152,7 +152,7 @@ class GraphTests {
 
         @Test
         fun `Test nearest Edge from bottom right to middle`() {
-            val actual: EdgeResult? = testGraph.nearestEdge(.5f, .5f, bottomRight)
+            val actual: EdgeResult? = testGraph.nearestEdge(.5f, .5f)
             val expect: EdgeResult = EdgeResult(.0f, .5f, EndpointPair.unordered(topRight, bottomRight))
             assertThat(actual).isEqualTo(expect)
         }

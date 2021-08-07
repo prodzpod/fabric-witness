@@ -12,7 +12,7 @@ private const val KEY_EDGES = "edges"
 private const val KEY_NODES = "nodes"
 private const val KEY_FILL = "fill"
 
-fun CompoundTag.getValueGraph(key: String): ValueGraph<Node, Edge> =
+fun NbtCompound.getValueGraph(key: String): ValueGraph<Node, Edge> =
     getCompound(key).let { tag ->
         ValueGraphBuilder
             .undirected()
@@ -21,7 +21,7 @@ fun CompoundTag.getValueGraph(key: String): ValueGraph<Node, Edge> =
                 if (tag.isEmpty) return@apply
 
                 val nodes: List<Node> = tag.getList(KEY_NODES, 10)
-                    .filterIsInstance<CompoundTag>()
+                    .filterIsInstance<NbtCompound>()
                     .map { it.getNode() }
 
                 if (nodes.isEmpty()) return@apply
@@ -36,12 +36,12 @@ fun CompoundTag.getValueGraph(key: String): ValueGraph<Node, Edge> =
             }
     }
 
-fun CompoundTag.putValueGraph(key: String, graph: ValueGraph<Node, Edge>) {
-    put(key, CompoundTag().apply {
+fun NbtCompound.putValueGraph(key: String, graph: ValueGraph<Node, Edge>) {
+    put(key, NbtCompound().apply {
         val nodes: Set<Node> = graph.nodes()
-        put(KEY_NODES, ListTag().apply {
+        put(KEY_NODES, NbtList().apply {
             nodes.forEach { node ->
-                add(CompoundTag().apply { putNode(node) })
+                add(NbtCompound().apply { putNode(node) })
             }
         })
         putIntArray(KEY_EDGES, IntArray(nodes.size * nodes.size).apply {
@@ -54,7 +54,7 @@ fun CompoundTag.putValueGraph(key: String, graph: ValueGraph<Node, Edge>) {
 }
 
 @Suppress("UnstableApiUsage")
-fun CompoundTag.getGraph(key: String): Graph<Node> =
+fun NbtCompound.getGraph(key: String): Graph<Node> =
     getCompound(key).let { tag ->
         GraphBuilder
             .undirected()
@@ -63,7 +63,7 @@ fun CompoundTag.getGraph(key: String): Graph<Node> =
                 if (tag.isEmpty) return@apply
 
                 val nodes: List<Node> = tag.getList(KEY_NODES, 10)
-                    .filterIsInstance<CompoundTag>()
+                    .filterIsInstance<NbtCompound>()
                     .map { it.getNode() }
 
                 if (nodes.isEmpty()) return@apply
@@ -77,15 +77,15 @@ fun CompoundTag.getGraph(key: String): Graph<Node> =
             }
     }
 
-fun CompoundTag.putGraph(key: String, graph: Graph<Node>) {
-    put(key, CompoundTag().apply {
+fun NbtCompound.putGraph(key: String, graph: Graph<Node>) {
+    put(key, NbtCompound().apply {
         val nodes: Set<Node> = graph.nodes()
-        put(KEY_NODES, ListTag().apply {
+        put(KEY_NODES, NbtList().apply {
             nodes.forEach { node ->
-                add(CompoundTag().apply { putNode(node) })
+                add(NbtCompound().apply { putNode(node) })
             }
         })
-        put(KEY_FILL, IntArrayTag(graph.adjacencyMatrix.flatten().map { value -> if (value) 1 else 0 }))
+        put(KEY_FILL, NbtIntArray(graph.adjacencyMatrix.flatten().map { value -> if (value) 1 else 0 }))
     })
 }
 
@@ -101,7 +101,7 @@ fun ValueGraph<Node, Edge>.nearestNode(x: Float, y: Float, from: Node? = null): 
 
 data class EdgeResult(val x: Float, val y: Float, val edge: EndpointPair<Node>)
 
-fun ValueGraph<Node, Edge>.nearestEdge(x: Float, y: Float, from: Node? = null): EdgeResult? {
+fun ValueGraph<Node, Edge>.nearestEdge(x: Float, y: Float): EdgeResult? {
     val imaginaryNode = Node(x, y)
     val nearestEdge: EndpointPair<Node> = edges().minByOrNull { endpointPair ->
         val u: Node = endpointPair.nodeU()

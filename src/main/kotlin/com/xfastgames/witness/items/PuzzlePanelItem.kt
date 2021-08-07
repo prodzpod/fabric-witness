@@ -13,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.world.World
@@ -32,7 +32,7 @@ class PuzzlePanelItem : Item(Settings().group(ItemGroup.REDSTONE)), Clientside {
     }
 
     override fun onCraft(stack: ItemStack?, world: World?, player: PlayerEntity?) {
-        stack?.tag = CompoundTag().apply { putPanel(KEY_PANEL, Panel.TEST) }
+        stack?.nbt = NbtCompound().apply { putPanel(KEY_PANEL, Panel.TEST) }
     }
 
     // TODO: Use localised strings here
@@ -42,7 +42,7 @@ class PuzzlePanelItem : Item(Settings().group(ItemGroup.REDSTONE)), Clientside {
         tooltip: MutableList<Text>,
         context: TooltipContext?
     ) {
-        val puzzle: Panel = stack.tag?.getPanel(KEY_PANEL) ?: return
+        val puzzle: Panel = stack.nbt?.getPanel(KEY_PANEL) ?: return
 
         val typeString: String = puzzle.type.name.capitalize()
 

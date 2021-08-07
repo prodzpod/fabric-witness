@@ -1,17 +1,15 @@
 plugins {
-    kotlin("jvm") version Jetbrains.Kotlin.version
     id("fabric-loom") version Fabric.Loom.version
+    val kotlinVersion: String by System.getProperties()
+    kotlin("jvm").version(Jetbrains.Kotlin.version)
     `maven-publish`
 }
-
+minecraft {}
 repositories {
     mavenCentral()
-    maven(url = "http://maven.fabricmc.net/") { name = "Fabric" }
+    maven(url = "https://maven.fabricmc.net/") { name = "Fabric" }
     maven(url = "https://server.bbkr.space/artifactory/libs-release") { name = "CottonMC" }
     maven(url = "https://maven.siphalor.de") { name = "Siphalor's Maven" }
-}
-
-minecraft {
 }
 
 tasks.test {
@@ -27,7 +25,8 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api", "fabric-api", Fabric.API.version)
 
     modImplementation(Mods.libgui)
-    modImplementation(Mods.modmenu)
+//    modImplementation(Mods.modmenu)
+    modImplementation(files("$projectDir/libs/modmenu-2.0.4.jar"))
     modImplementation(Mods.nbtcrafting)
 
     implementation(Google.guava)
@@ -46,21 +45,29 @@ tasks.withType<JavaCompile> {
 }
 
 tasks {
-    compileJava {
-        targetCompatibility = "1.8"
-        sourceCompatibility = "1.8"
+    val javaVersion = JavaVersion.VERSION_16
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        sourceCompatibility = javaVersion.toString()
+        targetCompatibility = javaVersion.toString()
+        options.release.set(javaVersion.toString().toInt())
     }
-
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            freeCompilerArgs = listOf(
-                "-Xopt-in=kotlin.RequiresOptIn",
-                "-Xopt-in=kotlin.ExperimentalStdlibApi"
-            )
-        }
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions { jvmTarget = javaVersion.toString() }
+        sourceCompatibility = javaVersion.toString()
+        targetCompatibility = javaVersion.toString()
     }
-
+    jar { from("LICENSE") { rename { "${it}_${base.archivesName}" } } }
+    processResources {
+        inputs.property("version", project.version)
+        filesMatching("fabric.mod.json") { expand(mutableMapOf("version" to project.version)) }
+    }
+    java {
+        toolchain { languageVersion.set(JavaLanguageVersion.of(javaVersion.toString())) }
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+        withSourcesJar()
+    }
     processResources {
         filesMatching("fabric.mod.json") {
             expand(
@@ -72,10 +79,6 @@ tasks {
                 "fabricApiVersion" to Fabric.API.version
             )
         }
-    }
-
-    jar {
-        from("LICENSE")
     }
 }
 

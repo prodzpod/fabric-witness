@@ -29,14 +29,13 @@ import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.client.network.ClientPlayerInteractionManager
 import net.minecraft.client.util.NarratorManager
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.decoration.ItemFrameEntity
 import net.minecraft.entity.projectile.ProjectileUtil
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
 import net.minecraft.state.property.Properties
@@ -44,10 +43,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.*
 import net.minecraft.world.RaycastContext
 
 private const val BORDER_WIDTH = 14
@@ -83,8 +79,7 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
     private val mouse: Mouse by lazy { clientInstance.mouse }
     private val mouseAccessor: MouseAccessorMixin by lazy { requireNotNull(clientInstance.mouse as? MouseAccessorMixin) }
 
-    override fun init(client: MinecraftClient?, width: Int, height: Int) {
-        super.init(client, width, height)
+    override fun init() {
         mouse.hide()
         client?.player?.playSound(Sounds.FOCUS_MODE_ENTER, 0.5f, 1f)
         client?.options?.hudHidden = true
@@ -132,8 +127,8 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
 
         // Only respond if the entity has an panel
         val puzzleStack: ItemStack = blockEntity.inventory.getStack(0)
-        val tag: CompoundTag = puzzleStack.tag ?: return
-        val puzzle: Panel? = tag.getPanel(KEY_PANEL)
+        val nbt: NbtCompound = puzzleStack.nbt ?: return
+        val puzzle: Panel? = nbt.getPanel(KEY_PANEL)
         if (puzzleStack.item !is PuzzlePanelItem) return
         if (puzzle == null) return
 
@@ -152,9 +147,8 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
                 .copy(modifier = Modifier.END)
 
         val world: ClientWorld = requireNotNull(client?.world)
-        val panelHitResult: PuzzlePanelHitResult? = rayCastAtPanel(world, mouseX, mouseY)
+        val panelHitResult: PuzzlePanelHitResult = rayCastAtPanel(world, mouseX, mouseY) ?: return
 
-        if (panelHitResult == null) return
         if (panelHitResult.blockEntity != startedBlockEntity) return
 
         val (clampedClickX, clampedClickY) = panelHitResult.position
@@ -166,7 +160,7 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
         val nodeBeforeLastNode: Node? = lastNode?.let { line.getOrNull(line.indexOf(lastNode) - 1) }
 
         val overNode: Node? = puzzle.graph.nearestNode(clampedClickX, clampedClickY, lastNode)
-        val overEdgeResult: EdgeResult? = puzzle.graph.nearestEdge(clampedClickX, clampedClickY, lastNode)
+        val overEdgeResult: EdgeResult? = puzzle.graph.nearestEdge(clampedClickX, clampedClickY)
         val overEdge: EndpointPair<Node>? = overEdgeResult?.edge
         val overEdgeImaginaryPoint: Node? = overEdgeResult?.let { Node(overEdgeResult.x, overEdgeResult.y) }
 
@@ -235,8 +229,7 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
             return true
         }
 
-        val panelHitResult: PuzzlePanelHitResult? = rayCastAtPanel(world, mouseX, mouseY)
-        if (panelHitResult == null) return missClick(player)
+        val panelHitResult: PuzzlePanelHitResult = rayCastAtPanel(world, mouseX, mouseY) ?: return missClick(player)
 
         val puzzlePanel: Panel = panelHitResult.puzzlePanel
         val (clickX, clickY) = panelHitResult.position
@@ -249,8 +242,7 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
         }
 
         overNode?.let {
-            val line: Graph<Node>? = domain.startTracingLine(puzzlePanel, overNode)
-            if (line == null) return missClick(player)
+            val line: Graph<Node> = domain.startTracingLine(puzzlePanel, overNode) ?: return missClick(player)
             updateLine(blockEntity, puzzlePanel, line)
         }
 
@@ -289,23 +281,23 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
         val fov: Double = client.options.fov
         val angleSize: Double = fov / height
 
-        val verticalRotationAxis = Vector3f(cameraDirection)
-        verticalRotationAxis.cross(Vector3f.POSITIVE_Y)
+        val verticalRotationAxis = Vec3f(cameraDirection)
+        verticalRotationAxis.cross(Vec3f.POSITIVE_Y)
 
         //The camera is pointing directly up or down, you'll have to fix this one
         if (!verticalRotationAxis.normalize()) return null
 
-        val horizontalRotationAxis = Vector3f(cameraDirection)
+        val horizontalRotationAxis = Vec3f(cameraDirection)
         horizontalRotationAxis.cross(verticalRotationAxis)
         horizontalRotationAxis.normalize()
 
-        val cameraRotationAxis = Vector3f(cameraDirection)
+        val cameraRotationAxis = Vec3f(cameraDirection)
         cameraRotationAxis.cross(horizontalRotationAxis)
         val anglePerPixel: Float = angleSize.toFloat()
         val horizontalRotation: Float = (mouseX.toFloat() - width / 2f) * anglePerPixel
         val verticalRotation: Float = (mouseY.toFloat() - height / 2f) * anglePerPixel
 
-        val orignialCameraAxis = Vector3f(cameraDirection)
+        val orignialCameraAxis = Vec3f(cameraDirection)
         orignialCameraAxis.rotate(cameraRotationAxis.getDegreesQuaternion(verticalRotation))
         orignialCameraAxis.rotate(horizontalRotationAxis.getDegreesQuaternion(horizontalRotation))
         val direction = Vec3d(orignialCameraAxis)
@@ -380,7 +372,7 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
 
         // Only respond if the entity has an panel
         val puzzleStack: ItemStack = blockEntity.inventory.getStack(0)
-        val puzzlePanel: Panel = puzzleStack.tag?.getPanel(KEY_PANEL) ?: return null
+        val puzzlePanel: Panel = puzzleStack.nbt?.getPanel(KEY_PANEL) ?: return null
         if (puzzleStack.item !is PuzzlePanelItem) return null
 
         // Only respond to block hit results for puzzle frames
@@ -439,7 +431,7 @@ class PuzzleSolverScreen : Screen(NarratorManager.EMPTY) {
 
         val stack: ItemStack = blockEntity.inventory.getStack(0)
 
-        val updatedStack: ItemStack = stack.copy().apply { tag?.putPanel(KEY_PANEL, updatedPanel) }
+        val updatedStack: ItemStack = stack.copy().apply { nbt?.putPanel(KEY_PANEL, updatedPanel) }
 
         // TODO: Synchronise inventory
         blockEntity.inventory.setStack(0, updatedStack)

@@ -1,15 +1,13 @@
 {
   "required": true,
   "package": "com.xfastgames.witness.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "ExampleMixin"
-  ],
+  "compatibilityLevel": "JAVA_16",
   "client": [
     "renderer.MixinHeldItemRenderer",
     "utils.MouseAccessorMixin"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  "injectors": {"defaultRequire": 1},
+  "mixins": [
+    "ExampleMixin"
+  ]
 }

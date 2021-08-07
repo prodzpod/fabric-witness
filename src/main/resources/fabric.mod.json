@@ -3,35 +3,30 @@
   "id": "witness",
   "version": "${version}",
   "name": "Witness Minecraft",
-  "description": "This a helper mod for the Witness Minecraft Series",
-  "authors": [
-    "xxfast"
-  ],
+  "description": "Witness in Minecraft? Custom Symbols? What?",
+  "authors": ["xxfast", "prodzpod"],
   "contact": {
     "homepage": "https://www.youtube.com/channel/UCrLikF1yl6dqz0N9OaJlAcA",
-    "sources": "https://github.com/xxfast/fabric-witness"
+    "sources": "https://github.com/prodzpod/fabric-witness"
   },
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/witness/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "com.xfastgames.witness.Witness"
-    ],
-    "client": [
-      "com.xfastgames.witness.Witness"
-    ]
+    "main": [{"adapter": "kotlin", "value": "com.xfastgames.witness.Witness"}],
+    "client": [{"adapter": "kotlin", "value": "com.xfastgames.witness.Witness"}]
   },
   "mixins": [
     "witness.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.7.1",
+    "java": ">=16",
+    "minecraft": "1.17.x",
     "fabric": "*",
-    "fabric-language-kotlin": "*",
+    "fabricloader": ">=0.11.6",
+    "fabric-language-kotlin": ">=1.6.3+kotlin.1.5.21",
     "libgui": "*",
-    "nbtcrafting": "*",
-    "minecraft": "1.16.x"
+    "nbtcrafting": "*"
   },
   "suggests": {
     "flamingo": "*"
